@@ -41,6 +41,10 @@
         bottom: 1rem;
         right: 2rem;
       }
+
+      canvas {
+        display: none;
+      }
     </style>
   </head>
   <body>
@@ -49,6 +53,7 @@
     </header>
     <xil-input></xil-input>
 
+    <canvas></canvas>
     <qr-code
       module-color="#e3e0e0"
       position-ring-color="#fff"
@@ -64,9 +69,39 @@
     <script>
       const qrCode = document.querySelector("qr-code");
       const input = document.querySelector("xil-input");
+      const canvas = document.querySelector("canvas");
+      const context = canvas.getContext("2d");
 
       input.addEventListener("data", (event) => {
         qrCode.setAttribute("contents", event.detail);
+      });
+
+      qrCode.addEventListener("click", () => {
+        const a = document.createElement("a");
+        a.href = canvas.toDataURL("image/png");
+        a.download = "qr-code.png";
+        a.click();
+      });
+
+      qrCode.addEventListener("codeRendered", (event) => {
+        context.clearRect(0, 0, canvas.width, canvas.height);
+        const svg = event.target.shadowRoot.querySelector("svg");
+        console.log(svg);
+        const img = new Image();
+        canvas.width = svg.width.baseVal.value;
+        canvas.height = svg.height.baseVal.value;
+        const xml = new XMLSerializer();
+        const svgData = xml.serializeToString(svg);
+        const blob = new Blob([svgData], {
+          type: "image/svg+xml;charset=utf-8",
+        });
+        const url = URL.createObjectURL(blob);
+        img.src = url;
+        img.onload = () => {
+          context.drawImage(img, 0, 0);
+          const img2 = new Image();
+          img2.src = canvas.toDataURL("image/png");
+        };
       });
     </script>
   </body>
