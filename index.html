@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>QR Generator</title>
+
+    <style>
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
+      }
+
+      h1 {
+        color: #fff;
+        font-size: clamp(3rem, 5vw, 8rem);
+      }
+
+      body {
+        font-family: Arial, sans-serif;
+        width: min(100vw, 700px);
+        height: 100dvh;
+        background-color: #2a2a2a;
+        overflow: hidden;
+        margin: auto;
+        display: grid;
+        align-items: center;
+        place-content: center;
+        justify-items: center;
+        text-align: center;
+      }
+
+      xil-input {
+        width: 100%;
+      }
+
+      xil-social {
+        position: absolute;
+        z-index: 1;
+        bottom: 1rem;
+        right: 2rem;
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <h1>QR Generator</h1>
+    </header>
+    <xil-input></xil-input>
+
+    <qr-code
+      module-color="#e3e0e0"
+      position-ring-color="#fff"
+      position-center-color="#fba75e"
+      contents="https://github.com/Xilerth"
+    ></qr-code>
+
+    <xil-social></xil-social>
+
+    <script src="node_modules/@bitjson/qr-code/dist/qr-code.js"></script>
+    <script src="components/input.component.js"></script>
+    <script src="components/social-networks.js"></script>
+    <script>
+      const qrCode = document.querySelector("qr-code");
+      const input = document.querySelector("xil-input");
+
+      input.addEventListener("data", (event) => {
+        qrCode.setAttribute("contents", event.detail);
+      });
+    </script>
+  </body>
+</html>
