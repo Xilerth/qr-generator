@@ -45,6 +45,44 @@
       canvas {
         display: none;
       }
+
+      xil-controlls {
+        position: absolute;
+        z-index: 1;
+        top: 2.5rem;
+        right: 2rem;
+        padding: 1rem;
+        text-align: start;
+        background-color: #383838;
+        border-radius: 1rem;
+        border: 1px solid #272727;
+        color: white;
+      }
+
+      #menuState {
+        display: none;
+      }
+
+      .controlls:has(#menuState:checked) xil-controlls {
+        display: grid;
+      }
+
+      .controlls:has(#menuState:not(:checked)) xil-controlls {
+        display: none;
+      }
+
+      .controlls:has(#menuState:checked) .hamburger,
+      .controlls:has(#menuState:not(:checked)) .times {
+        display: none;
+      }
+
+      .controlls:has(#menuState:checked) .times,
+      .controlls:has(#menuState:not(:checked)) .hamburger {
+        display: block;
+        position: absolute;
+        top: 1rem;
+        right: 2rem;
+      }
     </style>
   </head>
   <body>
@@ -59,18 +97,58 @@
       position-ring-color="#fff"
       position-center-color="#fba75e"
       contents="https://github.com/Xilerth"
-    ></qr-code>
+    >
+    </qr-code>
+
+    <div class="controlls">
+      <input type="checkbox" id="menuState" />
+      <label for="menuState" class="hamburger">
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          width="24"
+          height="24"
+          viewBox="0 0 24 24"
+        >
+          <path
+            fill="#ffffff"
+            d="M3 6h18v2H3V6zm0 5h18v2H3v-2zm0 5h18v2H3v-2z"
+          ></path>
+        </svg>
+      </label>
+
+      <label for="menuState" class="times">
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          width="24"
+          height="24"
+          viewBox="0 0 24 24"
+        >
+          <path
+            fill="#ffffff"
+            d="M12 10.586l-4.293-4.293-1.414 1.414L10.586 12l-4.293 4.293 1.414 1.414L12 13.414l4.293 4.293 1.414-1.414L13.414 12l4.293-4.293-1.414-1.414L12 10.586z"
+          ></path>
+        </svg>
+      </label>
+
+      <xil-controlls
+        module-color="#e3e0e0"
+        position-ring-color="#ffffff"
+        position-center-color="#fba75e"
+      ></xil-controlls>
+    </div>
 
     <xil-social></xil-social>
 
     <script src="node_modules/@bitjson/qr-code/dist/qr-code.js"></script>
     <script src="components/input.component.js"></script>
     <script src="components/social-networks.js"></script>
+    <script src="components/controlls.component.js"></script>
     <script>
       const qrCode = document.querySelector("qr-code");
       const input = document.querySelector("xil-input");
       const canvas = document.querySelector("canvas");
       const context = canvas.getContext("2d");
+      const controlls = document.querySelector("xil-controlls");
 
       input.addEventListener("data", (event) => {
         qrCode.setAttribute("contents", event.detail);
@@ -84,12 +162,18 @@
       });
 
       qrCode.addEventListener("codeRendered", (event) => {
+        generateQR(event);
+      });
+
+      function generateQR(event) {
         context.clearRect(0, 0, canvas.width, canvas.height);
-        const svg = event.target.shadowRoot.querySelector("svg");
+        const svg = qrCode.shadowRoot.querySelector("svg");
         console.log(svg);
         const img = new Image();
-        canvas.width = svg.width.baseVal.value;
-        canvas.height = svg.height.baseVal.value;
+
+        canvas.width = svg.width.baseVal.value * 4;
+        canvas.height = svg.height.baseVal.value * 4;
+
         const xml = new XMLSerializer();
         const svgData = xml.serializeToString(svg);
         const blob = new Blob([svgData], {
@@ -102,6 +186,17 @@
           const img2 = new Image();
           img2.src = canvas.toDataURL("image/png");
         };
+      }
+      controlls.addEventListener("module-color", (event) => {
+        qrCode.setAttribute("module-color", event.detail);
+      });
+
+      controlls.addEventListener("position-ring-color", (event) => {
+        qrCode.setAttribute("position-ring-color", event.detail);
+      });
+
+      controlls.addEventListener("position-center-color", (event) => {
+        qrCode.setAttribute("position-center-color", event.detail);
       });
     </script>
   </body>
